@@ -3,13 +3,15 @@ from bs4 import BeautifulSoup
 from loguru import logger
 import sys
 
-linkKommissare = "https://www.daserste.de/unterhaltung/krimi/tatort/kommissare/tatort-filter-aktuelle-kommissare-100.html"
-linkFolgenFirstPage = "https://www.daserste.de/unterhaltung/krimi/tatort/sendung/index.html"
-logger.add(sys.stderr, format="{time} {level} {message}", filter="my_module", level="INFO")
 
+def openPage(link):
+    r = requests.get(link)
+    statuscode = r.status_code
+    return r, statuscode
 
 
 def splitTatorte(Tatort):
+    # print(repr(Tatort))
     tatort = Tatort.replace("\n\n", "\n")
     tatort = tatort.replace("\n", "|")
     tmp = tatort.split("|")
@@ -34,9 +36,8 @@ def splitTatorte(Tatort):
 
 
 def getTatorte(page=None):
+    r, statuscode = openPage("https://www.daserste.de/unterhaltung/krimi/tatort/sendung/index.html")
     lstTatorte = {}
-    r = requests.get(linkFolgenFirstPage)
-    statuscode = r.status_code
     if statuscode == 200:
         soup = BeautifulSoup(r.content, features="html.parser")
         if page:
@@ -55,9 +56,7 @@ def getTatorte(page=None):
     currPage = 1
     while currPage < maxpage:
         logger.info("Lade Seite: {}", currPage)
-        linkFolgenFollowPages = "https://www.daserste.de/unterhaltung/krimi/tatort/sendung/tatort-alle-faelle-100~_seite-" + str(currPage) + ".html"
-        r = requests.get(linkFolgenFollowPages)
-        statuscode = r.status_code
+        r, statuscode = openPage("https://www.daserste.de/unterhaltung/krimi/tatort/sendung/tatort-alle-faelle-100~_seite-" + str(currPage) + ".html")
         if statuscode == 200:
             soup = BeautifulSoup(r.content, features="html.parser")
             table = soup.find("ul", class_ = "list")
@@ -72,4 +71,5 @@ def getTatorte(page=None):
 
 
 if __name__ == "__main__":
+    logger.add(sys.stderr, format="{time} {level} {message}", filter="my_module", level="INFO")
     print(getTatorte())
