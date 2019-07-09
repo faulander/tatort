@@ -19,6 +19,13 @@ jobs:
             pip install --upgrade pip
             pip install -r requirements.txt
       - run:
+          name: Running tests
+          command: |
+            . venv/bin/activate
+            pytest
+      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: test-results
+      - run:
           name: Get all Tatort episodes
           command: |
             . venv/bin/activate
