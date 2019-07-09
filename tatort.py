@@ -72,4 +72,4 @@ def getTatorte(page=None):
 
 if __name__ == "__main__":
     logger.add(sys.stderr, format="{time} {level} {message}", filter="my_module", level="INFO")
-    print(getTatorte())
+    print(getTatorte(1))
