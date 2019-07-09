@@ -18,4 +18,7 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r requirements.txt
+      - run:
+          name: Get all Tatort episodes
+          command: |
             python3 tatort.py
