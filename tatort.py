@@ -20,18 +20,14 @@ def splitStadt(Kommissar):
 def splitTatorte(Tatort):
     tatort = Tatort.replace("\n\n", "\n")
     tatort = tatort.replace("\n", "|")
-    #print(repr(tatort))
     tmp = tatort.split("|")
-    #print(len(tmp))
     for t in range(0, len(tmp)):
         tmp[t].strip()
     if len(tmp) > 2:
         titel = tmp[0]
         kommissar = tmp[1]
-        #print(repr(kommissar))
         if kommissar.startswith("(") and kommissar.endswith(")"):
             kommissar = kommissar[1:-1]  
-        #print(repr(kommissar))
         posOpenBrace = kommissar.find("(")    
         posCloseBrace = kommissar.find(")")
         if len(kommissar) > 3:
@@ -43,7 +39,7 @@ def splitTatorte(Tatort):
             kommissar = ""
             datum = tmp[1]
         lstTatorte[titel] = kommissar, stadt, datum
-        #print(titel, ":", lstTatorte[titel])
+
 
 def getKommissare():
     r = requests.get(linkKommissare)
@@ -57,14 +53,17 @@ def getKommissare():
         logger.critical("Seite der Kommissare konnte nicht geladen werden.")
 
 
-def getTatorte():
+def getTatorte(page=None):
     r = requests.get(linkFolgenFirstPage)
     statuscode = r.status_code
     if statuscode == 200:
         soup = BeautifulSoup(r.content, features="html.parser")
         mx = soup.find("h3", class_ = "ressort paging").string
         mx = mx.split("|")
-        maxpage = int(mx[1].strip())
+        if page:
+            maxpage = page
+        else:
+            maxpage = int(mx[1].strip())
         logger.info("Seiten zu verarbeiten: {}", str(maxpage))
         table = soup.find("ul", class_ = "list")
         lines = table.find_all("li")
@@ -91,10 +90,9 @@ def getTatorte():
 
 
 if __name__ == "__main__":
-    getKommissare()
-    getTatorte()
+    # getKommissare()
+    # kommissare = json.dumps(lstKommissare, ensure_ascii=False)
+    # print(kommissare)
+    getTatorte(1)
     tatorte = json.dumps(lstTatorte, ensure_ascii=False)
-    kommissare = json.dumps(lstKommissare, ensure_ascii=False)
     print(tatorte)
-    print(kommissare)
-    

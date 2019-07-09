@@ -1,4 +1,4 @@
 {
     "python.pythonPath": ".venv\\Scripts\\python.exe",
-    "python.linting.flake8Args": ["--ignore=E303,E501,E251"]
+    "python.linting.flake8Args": ["--ignore=E303,E501,E251,E226"]
 }
