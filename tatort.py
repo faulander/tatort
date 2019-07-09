@@ -6,15 +6,9 @@ import json
 
 linkKommissare = "https://www.daserste.de/unterhaltung/krimi/tatort/kommissare/tatort-filter-aktuelle-kommissare-100.html"
 linkFolgenFirstPage = "https://www.daserste.de/unterhaltung/krimi/tatort/sendung/index.html"
-lstKommissare = {}
-lstTatorte = {}
+#lstTatorte = {}
 logger.add(sys.stderr, format="{time} {level} {message}", filter="my_module", level="INFO")
 
-
-def splitStadt(Kommissar):
-    posOpenBrace = Kommissar.find("(")
-    posClosingBrace = Kommissar.find(")")
-    lstKommissare[Kommissar[:posOpenBrace-1]] = Kommissar[posOpenBrace+1:posClosingBrace]
 
 
 def splitTatorte(Tatort):
@@ -38,22 +32,11 @@ def splitTatorte(Tatort):
             stadt = ""
             kommissar = ""
             datum = tmp[1]
-        lstTatorte[titel] = kommissar, stadt, datum
-
-
-def getKommissare():
-    r = requests.get(linkKommissare)
-    if r.status_code == 200:
-        soup = BeautifulSoup(r.content, features="html.parser")
-        Kommissare = soup.find_all("h4", class_ = "headline")
-        for Kommissar in Kommissare:
-            splitStadt(Kommissar.get_text())
-        logger.info("Seite der Kommissare aktualisiert.")
-    else:
-        logger.critical("Seite der Kommissare konnte nicht geladen werden.")
+        return titel, kommissar, stadt, datum
 
 
 def getTatorte(page=None):
+    lstTatorte = {}
     r = requests.get(linkFolgenFirstPage)
     statuscode = r.status_code
     if statuscode == 200:
@@ -69,7 +52,8 @@ def getTatorte(page=None):
         lines = table.find_all("li")
         for line in lines:
             link = line.find("a").text
-            splitTatorte(link)
+            titel, kommissar, stadt, datum = splitTatorte(link)
+            lstTatorte[titel] = kommissar, stadt, datum
     currPage = 1
     while currPage < maxpage:   
         logger.info("Lade Seite: {}", currPage)
@@ -86,13 +70,36 @@ def getTatorte(page=None):
         else:
             logger.error("Problem auf Seite {}", currPage)
         currPage += 1
-
+    return lstTatorte
 
 
 if __name__ == "__main__":
-    # getKommissare()
-    # kommissare = json.dumps(lstKommissare, ensure_ascii=False)
-    # print(kommissare)
-    getTatorte(1)
-    tatorte = json.dumps(lstTatorte, ensure_ascii=False)
-    print(tatorte)
+    print(getTatorte(1))
+
+
+
+
+
+
+
+# Obsolete: Will be added to the main function
+"""
+def splitStadt(Kommissar):
+    posOpenBrace = Kommissar.find("(")
+    posClosingBrace = Kommissar.find(")")
+    lstKommissare[Kommissar[:posOpenBrace-1]] = Kommissar[posOpenBrace+1:posClosingBrace]
+"""
+
+# Obsolete: Will be added to the main function
+"""
+def getKommissare():
+    r = requests.get(linkKommissare)
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.content, features="html.parser")
+        Kommissare = soup.find_all("h4", class_ = "headline")
+        for Kommissar in Kommissare:
+            splitStadt(Kommissar.get_text())
+        logger.info("Seite der Kommissare aktualisiert.")
+    else:
+        logger.critical("Seite der Kommissare konnte nicht geladen werden.")
+"""
