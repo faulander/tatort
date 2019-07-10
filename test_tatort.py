@@ -9,6 +9,10 @@ def test_splitTatorte():
     assert datum == "08.10.1972"
 
 
+def test_splitTatorteOhneKommissar():
+    titel, kommissar, stadt, datum = splitTatorte("Sonntagsmörder\n\n13.11.2016")
+
+
 def test_openPage():
     r, statuscode = openPage("https://www.google.at")
     assert statuscode == 200
