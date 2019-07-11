@@ -111,4 +111,4 @@ if __name__ == "__main__":
     # print(getTatorte(1, description=True))
     # writeFile saves the Tatort as JSON in a file:
     tatorte = getTatorte(description=False)
-    writeFile("tatorte.json", tatorte)
+    writeFile("tatort.json", tatorte)
