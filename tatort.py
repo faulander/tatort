@@ -5,7 +5,7 @@ import sys
 import json
 import os
 import configparser
-
+from fuzzywuzzy import fuzz
 
 def settings():
     conf = {}
@@ -33,6 +33,11 @@ def settings():
         else:
             conf['liste'] = True
     return conf
+
+
+def getFiles(dir):
+    (_, _, filenames) = next(os.walk(dir))
+    return filenames
 
 
 def openPage(link):
@@ -148,3 +153,14 @@ if __name__ == "__main__":
     else:
         Tatorte = readFile()
         logger.info("Tatorte von lokalem JSON gelesen.")
+    if config['rename']:
+        logger.info("Umbenennen ist aktiv, Verzeichnis wird eingelesen.")
+        files = getFiles(config['verzeichnis'])
+        print(repr(Tatorte))
+        for tatort in Tatorte.keys():
+            #print(tatort)
+            #print(Tatorte[tatort][0])
+            for file in files:
+                ratio = fuzz.partial_ratio(Tatorte[tatort][0], file)
+                if ratio > 50:
+                    logger.info("{}:{}:{}", Tatorte[tatort][0], file, str(ratio))
