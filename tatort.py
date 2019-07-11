@@ -109,7 +109,6 @@ if __name__ == "__main__":
     # Parameter "description" also downloads the description of the episodes.
     # Please take care that this may take a very long time.
     # print(getTatorte(1, description=True))
-
     # writeFile saves the Tatort as JSON in a file:
-    tatorte = getTatorte(description=True)
+    tatorte = getTatorte(description=False)
     writeFile("tatorte.json", tatorte)
