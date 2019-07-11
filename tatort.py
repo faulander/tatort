@@ -3,6 +3,36 @@ from bs4 import BeautifulSoup
 from loguru import logger
 import sys
 import json
+import os
+import configparser
+
+
+def settings():
+    conf = {}
+    config = configparser.ConfigParser()
+    if not os.path.isfile("tatort.ini"):
+        config['TATORT'] = {'Verzeichnis': '',
+                            'Jahr': 'no',
+                            'Stadt': 'yes',
+                            'Team': 'no',
+                            'filename': '#team# - #titel# - #datum#',
+                            'umbenennen': 'yes'
+                            }
+        with open('tatort.ini', 'w') as configfile:
+            config.write(configfile)
+    else:
+        config.read("tatort.ini")
+        conf['verzeichnis'] = config['TATORT']['verzeichnis']
+        conf['jahr'] = config.getboolean('TATORT', 'jahr')
+        conf['stadt'] = config.getboolean('TATORT', 'stadt')
+        conf['team'] = config.getboolean('TATORT', 'team')
+        conf['maske'] = config['TATORT']['filename']
+        conf['rename'] = config.getboolean('TATORT', 'umbenennen')
+        if not os.path.isfile("tatort.json"):
+            conf['liste'] = False
+        else:
+            conf['liste'] = True
+    return conf
 
 
 def openPage(link):
@@ -100,15 +130,21 @@ def writeFile(filename, data):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
+def readFile():
+    with open('tatort.json') as f:
+        return json.load(f)
+
+
 if __name__ == "__main__":
     logger.add(sys.stderr, format="{time} {level} {message}", filter="my_module", level="INFO")
-    # getTatorte delivers a json with Tatort Episodes.
-    # If no argument is parsed, it delivers ALL ever broadcasted Tatorts.
-    # Argument "1" delivers the latest 50 as is much faster
-    # Argument "2" delivers 51-100 and so on
-    # Parameter "description" also downloads the description of the episodes.
-    # Please take care that this may take a very long time.
-    # print(getTatorte(1, description=True))
-    # writeFile saves the Tatort as JSON in a file:
-    tatorte = getTatorte(description=False)
-    writeFile("tatort.json", tatorte)
+    config = settings()
+    logger.info("Settings: {}", config)
+    # TODO: Files umbenennen
+    # TODO: Files umsortieren
+    if not config['liste']:
+        Tatorte = getTatorte()
+        writeFile('Tatort.json', Tatorte)
+        logger.info("Tatorte von Webseite gelesen und in lokales JSON geschrieben.")
+    else:
+        Tatorte = readFile()
+        logger.info("Tatorte von lokalem JSON gelesen.")
