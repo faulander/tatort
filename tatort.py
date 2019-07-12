@@ -149,15 +149,17 @@ def matching(term1, term2):
                         'der': '',
                         'das': '',
                         ' ': '_',
-                        '-': ''
+                        '-': '',
+                        'kopie': '',
+                        '__': '_'
                      }
 
     for key, value in replDictionary.items():
-        term1 = term1.replace(key, value).lower()
-        term2 = term2.replace(key, value).lower()
+        term1n = term1.replace(key, value).lower()
+        term2n = term2.replace(key, value).lower()
         ratio = fuzz.partial_ratio(term1, term2)
-        # if ratio > 75:
-        # logger.info("Terms used: {} ### {} ### {}", term1, term2, str(ratio))
+        if ratio > 75:
+            logger.info("Terms used: {} ### {} ### {} ### {} ### {}", term1n, term2n, str(ratio))
     return ratio
 
 
@@ -178,8 +180,6 @@ if __name__ == "__main__":
         logger.info("Umbenennen ist aktiv, Verzeichnis wird eingelesen.")
         files = getFiles(config['verzeichnis'])
         print(repr(Tatorte))
-        for tatort in Tatorte.keys():
-            for file in files:
+        for file in files:
+            for tatort in Tatorte.keys():
                 ratio = matching(Tatorte[tatort][0], file)
-                if ratio > 75:
-                    logger.info("{} ### {} ### {}", Tatorte[tatort][0], file, str(ratio))
