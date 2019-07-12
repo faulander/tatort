@@ -7,6 +7,7 @@ import os
 import configparser
 from fuzzywuzzy import fuzz
 
+
 def settings():
     conf = {}
     config = configparser.ConfigParser()
@@ -136,8 +137,28 @@ def writeFile(filename, data):
 
 
 def readFile():
-    with open('tatort.json') as f:
+    with open('tatort.json', encoding='utf8') as f:
         return json.load(f)
+
+
+def matching(term1, term2):
+    replDictionary = {u'ä': 'ae',
+                        u'ö': 'oe',
+                        u'ü': 'ue',
+                        'die': '',
+                        'der': '',
+                        'das': '',
+                        ' ': '_',
+                        '-': ''
+                     }
+
+    for key, value in replDictionary.items():
+        term1 = term1.replace(key, value).lower()
+        term2 = term2.replace(key, value).lower()
+        ratio = fuzz.partial_ratio(term1, term2)
+        # if ratio > 75:
+        # logger.info("Terms used: {} ### {} ### {}", term1, term2, str(ratio))
+    return ratio
 
 
 if __name__ == "__main__":
@@ -159,6 +180,6 @@ if __name__ == "__main__":
         print(repr(Tatorte))
         for tatort in Tatorte.keys():
             for file in files:
-                ratio = fuzz.partial_ratio(Tatorte[tatort][0], file)
-                if ratio > 50:
-                    logger.info("{}:{}:{}", Tatorte[tatort][0], file, str(ratio))
+                ratio = matching(Tatorte[tatort][0], file)
+                if ratio > 75:
+                    logger.info("{} ### {} ### {}", Tatorte[tatort][0], file, str(ratio))
