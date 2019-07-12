@@ -158,8 +158,6 @@ if __name__ == "__main__":
         files = getFiles(config['verzeichnis'])
         print(repr(Tatorte))
         for tatort in Tatorte.keys():
-            #print(tatort)
-            #print(Tatorte[tatort][0])
             for file in files:
                 ratio = fuzz.partial_ratio(Tatorte[tatort][0], file)
                 if ratio > 50:
