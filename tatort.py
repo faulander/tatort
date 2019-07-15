@@ -180,6 +180,7 @@ if __name__ == "__main__":
         logger.info("Umbenennen ist aktiv, Verzeichnis wird eingelesen.")
         files = getFiles(config['verzeichnis'])
         print(repr(Tatorte))
-        for file in files:
-            for tatort in Tatorte.keys():
-                ratio = matching(Tatorte[tatort][0], file)
+        if files:
+            for file in files:
+                for tatort in Tatorte.keys():
+                    ratio = matching(Tatorte[tatort][0], file)
