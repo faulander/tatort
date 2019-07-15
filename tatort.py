@@ -154,22 +154,19 @@ def matching(term1, term2):
                         'das ': '',
                         ' ': '_',
                         '-': '',
-                        'kopie': '',
                         '__': '_',
-                        'Tatort': '',
-                        '_(ab_12_Jahre)': '',
                         '__': '_'
                       }
 
     for key, value in replDictionary.items():
         term1n = term1.replace(key, value)
         term2n = term2.replace(key, value)
-    #if len(term1) > 2:
+    if len(term1) > 2:
         ratio = fuzz.partial_ratio(term1n.lower(), term2n.lower())
-    #else:
-    #    ratio = fuzz.partial_ratio(term1n, term2n)
-    if ratio > 95:
-        logger.info("Terms used: {} ### {} ### {}", term1n, term2n, str(ratio))
+    else:
+        ratio = fuzz.partial_ratio(term1n, term2n)
+    # if ratio > 95:
+    #    logger.info("Terms used: {} ### {} ### {}", term1n, term2n, str(ratio))
     return ratio
 
 
@@ -197,3 +194,13 @@ if __name__ == "__main__":
                 for tatort in Tatorte.keys():
                     # print(Tatorte[tatort][0])
                     ratio = matching(Tatorte[tatort][0], fileWithoutExtension)
+                    if ratio == 100:
+                        # logger.info(Tatorte[tatort])
+                        newFileName = Tatorte[tatort][0]
+                        if config['team']:
+                            newFileName = newFileName + " - " + Tatorte[tatort][1]
+                        if config['stadt']:
+                            newFileName = newFileName + " - " + Tatorte[tatort][2]
+                        if config['jahr']:
+                            newFileName = newFileName + " - " + Tatorte[tatort][3]
+                        logger.info("Old Filename: {}, New Filename: {}", fileWithoutExtension, newFileName)
