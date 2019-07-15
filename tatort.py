@@ -37,7 +37,7 @@ def settings():
 
 
 def getFiles(dir):
-    if os._isdir(dir):
+    if os.path.isdir(dir):
         (_, _, filenames) = next(os.walk(dir))
         return filenames
     else:
