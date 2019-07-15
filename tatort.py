@@ -37,8 +37,11 @@ def settings():
 
 
 def getFiles(dir):
-    (_, _, filenames) = next(os.walk(dir))
-    return filenames
+    if os._isdir(dir):
+        (_, _, filenames) = next(os.walk(dir))
+        return filenames
+    else:
+        return False
 
 
 def openPage(link):
