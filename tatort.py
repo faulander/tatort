@@ -161,13 +161,23 @@ def matching(term1, term2):
     for key, value in replDictionary.items():
         term1n = term1.replace(key, value)
         term2n = term2.replace(key, value)
-    if len(term1) > 2:
+    ratio = fuzz.ratio(term2n, term1n)
+    if ratio < 95:
         ratio = fuzz.partial_ratio(term1n.lower(), term2n.lower())
-    else:
-        ratio = fuzz.partial_ratio(term1n, term2n)
-    # if ratio > 95:
-    #    logger.info("Terms used: {} ### {} ### {}", term1n, term2n, str(ratio))
+    if ratio > 90 and (len(term1n) > len(term2n)+5 or len(term2n) > len(term1n)+5):
+        ratio = 0
+        logger.info("Terms used: {} ### {} ### {}", term1n, term2n, str(ratio))
     return ratio
+
+
+def renameFile(file, newFile):
+    logger.info("Old Filename: {}, New Filename: {}", file, newFile)
+    extension = file.split(".")[1]
+    newFile = newFile + "." + extension
+    new = os.path.join(config['verzeichnis'], newFile)
+    old = os.path.join(config['verzeichnis'], file)
+    # print(new)
+    os.rename(old, new)
 
 
 if __name__ == "__main__":
@@ -194,7 +204,7 @@ if __name__ == "__main__":
                 for tatort in Tatorte.keys():
                     # print(Tatorte[tatort][0])
                     ratio = matching(Tatorte[tatort][0], fileWithoutExtension)
-                    if ratio == 100:
+                    if ratio > 90:
                         # logger.info(Tatorte[tatort])
                         newFileName = Tatorte[tatort][0]
                         if config['team']:
@@ -203,4 +213,4 @@ if __name__ == "__main__":
                             newFileName = newFileName + " - " + Tatorte[tatort][2]
                         if config['jahr']:
                             newFileName = newFileName + " - " + Tatorte[tatort][3]
-                        logger.info("Old Filename: {}, New Filename: {}", fileWithoutExtension, newFileName)
+                        renameFile(file, newFileName)
