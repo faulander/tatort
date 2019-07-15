@@ -145,24 +145,31 @@ def readFile():
 
 
 def matching(term1, term2):
+    # logger.info("Term1: {}, Term2: {}", term1, term2)
     replDictionary = {u'ä': 'ae',
                         u'ö': 'oe',
                         u'ü': 'ue',
-                        'die': '',
-                        'der': '',
-                        'das': '',
+                        'die ': '',
+                        'der ': '',
+                        'das ': '',
                         ' ': '_',
                         '-': '',
                         'kopie': '',
+                        '__': '_',
+                        'Tatort': '',
+                        '_(ab_12_Jahre)': '',
                         '__': '_'
-                     }
+                      }
 
     for key, value in replDictionary.items():
-        term1n = term1.replace(key, value).lower()
-        term2n = term2.replace(key, value).lower()
-        ratio = fuzz.partial_ratio(term1, term2)
-        if ratio > 75:
-            logger.info("Terms used: {} ### {} ### {} ### {} ### {}", term1n, term2n, str(ratio))
+        term1n = term1.replace(key, value)
+        term2n = term2.replace(key, value)
+    #if len(term1) > 2:
+        ratio = fuzz.partial_ratio(term1n.lower(), term2n.lower())
+    #else:
+    #    ratio = fuzz.partial_ratio(term1n, term2n)
+    if ratio > 95:
+        logger.info("Terms used: {} ### {} ### {}", term1n, term2n, str(ratio))
     return ratio
 
 
@@ -174,7 +181,7 @@ if __name__ == "__main__":
     # TODO: Files umsortieren
     if not config['liste']:
         Tatorte = getTatorte()
-        writeFile('Tatort.json', Tatorte)
+        writeFile('tatort.json', Tatorte)
         logger.info("Tatorte von Webseite gelesen und in lokales JSON geschrieben.")
     else:
         Tatorte = readFile()
@@ -182,8 +189,11 @@ if __name__ == "__main__":
     if config['rename']:
         logger.info("Umbenennen ist aktiv, Verzeichnis wird eingelesen.")
         files = getFiles(config['verzeichnis'])
-        print(repr(Tatorte))
-        if files:
+        # print(repr(Tatorte))
+        if len(files) > 0:
             for file in files:
+                fileWithoutExtension = file.split(".")[0]
+                # print(fileWithoutExtension)
                 for tatort in Tatorte.keys():
-                    ratio = matching(Tatorte[tatort][0], file)
+                    # print(Tatorte[tatort][0])
+                    ratio = matching(Tatorte[tatort][0], fileWithoutExtension)
