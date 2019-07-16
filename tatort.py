@@ -146,21 +146,21 @@ def readFile():
 
 def matching(term1, term2):
     # logger.info("Term1: {}, Term2: {}", term1, term2)
-    replDictionary = {u'ä': 'ae',
-                        u'ö': 'oe',
-                        u'ü': 'ue',
-                        'die ': '',
-                        'der ': '',
-                        'das ': '',
-                        ' ': '_',
-                        '-': '',
-                        '__': '_',
-                        '__': '_'
+    replDictionary = {'ä': 'ae',
+                      'ö': 'oe',
+                      'ü': 'ue',
+                      ' ': '_',
+                      '-': '',
+                      '__': '_',
+                      '?': '',
+                      '!': ''
                       }
-
-    for key, value in replDictionary.items():
-        term1n = term1.replace(key, value)
-        term2n = term2.replace(key, value)
+    term1n = term1
+    term2n = term2
+    for key in replDictionary.keys():
+        term1n = term1n.replace(key, replDictionary[key])
+        term2n = term2n.replace(key, replDictionary[key])
+        # print(term1n, term2n)
     ratio = fuzz.ratio(term2n, term1n)
     if ratio < 95:
         ratio = fuzz.partial_ratio(term1n.lower(), term2n.lower())
@@ -204,6 +204,8 @@ if __name__ == "__main__":
                 for tatort in Tatorte.keys():
                     # print(Tatorte[tatort][0])
                     ratio = matching(Tatorte[tatort][0], fileWithoutExtension)
+                    if ratio > 70:
+                        logger.info("{} ### {} ### {}", Tatorte[tatort][0], fileWithoutExtension, str(ratio))
                     if ratio > 90:
                         # logger.info(Tatorte[tatort])
                         newFileName = Tatorte[tatort][0]
