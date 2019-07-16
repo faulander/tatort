@@ -197,22 +197,23 @@ if __name__ == "__main__":
         logger.info("Umbenennen ist aktiv, Verzeichnis wird eingelesen.")
         files = getFiles(config['verzeichnis'])
         # print(repr(Tatorte))
-        if len(files) > 0:
-            for file in files:
-                fileWithoutExtension = file.split(".")[0]
-                # print(fileWithoutExtension)
-                for tatort in Tatorte.keys():
-                    # print(Tatorte[tatort][0])
-                    ratio = matching(Tatorte[tatort][0], fileWithoutExtension)
-                    if ratio > 70:
-                        logger.info("{} ### {} ### {}", Tatorte[tatort][0], fileWithoutExtension, str(ratio))
-                    if ratio > 90:
-                        # logger.info(Tatorte[tatort])
-                        newFileName = Tatorte[tatort][0]
-                        if config['team']:
-                            newFileName = newFileName + " - " + Tatorte[tatort][1]
-                        if config['stadt']:
-                            newFileName = newFileName + " - " + Tatorte[tatort][2]
-                        if config['jahr']:
-                            newFileName = newFileName + " - " + Tatorte[tatort][3]
-                        renameFile(file, newFileName)
+        if files:
+            if len(files) > 0:
+                for file in files:
+                    fileWithoutExtension = file.split(".")[0]
+                    # print(fileWithoutExtension)
+                    for tatort in Tatorte.keys():
+                        # print(Tatorte[tatort][0])
+                        ratio = matching(Tatorte[tatort][0], fileWithoutExtension)
+                        if ratio > 70:
+                            logger.info("{} ### {} ### {}", Tatorte[tatort][0], fileWithoutExtension, str(ratio))
+                        if ratio > 90:
+                            # logger.info(Tatorte[tatort])
+                            newFileName = Tatorte[tatort][0]
+                            if config['team']:
+                                newFileName = newFileName + " - " + Tatorte[tatort][1]
+                            if config['stadt']:
+                                newFileName = newFileName + " - " + Tatorte[tatort][2]
+                            if config['jahr']:
+                                newFileName = newFileName + " - " + Tatorte[tatort][3]
+                            renameFile(file, newFileName)
