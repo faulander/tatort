@@ -1,5 +1,4 @@
-import os
-from tatort import splitTatorte, openPage, getFiles
+from tatort import splitTatorte, openPage
 
 
 def test_splitTatorte():
@@ -17,11 +16,3 @@ def test_splitTatorteOhneKommissar():
 def test_openPage():
     r, statuscode = openPage("https://www.google.at")
     assert statuscode == 200
-
-
-def test_getFiles():
-    print(os.name)
-    dir = ''
-    erg = getFiles(dir)
-    assert erg False
-
